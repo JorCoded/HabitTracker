@@ -4,19 +4,29 @@ import Button from "./Button";
 import {eachDayOfInterval, startOfWeek, endOfWeek, isFuture} from "date-fns";
 import {format} from "date-fns";
 
-function HabitList ()  {
-    const habits =[{id:"1", name:"Avery"},{id:"2", name:"Bennette"},];
+export type Habit={
+    id:string;
+    name:string
+}
+
+type HabitListProps={
+    habits: Habit[],
+    deleteHabit:(id:string)=>void,
+}
+
+export default function HabitList ({habits, deleteHabit}:HabitListProps)  {
+    //const habits =[{id:"1", name:"Avery"},{id:"2", name:"Bennette"},];
 
     let str = <></>;
 
     if (habits.length ===0) {
-        str= <><p className="text-zinc-400 text-center py-12">No habits found... Add one to get started!</p><img width={100} height={100} src={noItemImg} alt="" /></>
+        str= <><p className="text-zinc-400 text-center py-12">No habits found... Add one to get started!</p><img className="mx-auto" width={100} height={100} src={noItemImg} alt="" /></>
     }else{
 
         str = <div className="flex flex-col gap-3">
             
             {habits.map(habit=>(
-                <HabitItem key={habit.id} habit={habit}/>
+                <HabitItem deleteHabit={()=>deleteHabit(habit.id)} key={habit.id} habit={habit}/>
             ))}
             </div>
     }
@@ -26,10 +36,10 @@ function HabitList ()  {
 }
 
 type HabitItemProps = {
-    habit: {id:string,
-    name:string}
+    habit: Habit,
+    deleteHabit: (id:string)=>void,
 }
-function HabitItem({habit}:HabitItemProps){
+function HabitItem({habit, deleteHabit}:HabitItemProps){
     const visibleDates = eachDayOfInterval({
         start: startOfWeek(new Date(), {weekStartsOn:1}),
         end: endOfWeek(new Date(), {weekStartsOn:1}),
@@ -41,7 +51,7 @@ function HabitItem({habit}:HabitItemProps){
                 <span className="font-medium">{habit.name}</span>
                 <span className="text-small text-amber-400">🔥 3</span>
             </div>
-            <Button variant="ghost-destructive" className="text-sm">Delete</Button>
+            <Button onClick={()=>deleteHabit(habit.id)} variant="ghost-destructive" className="text-sm">Delete</Button>
         </div>
         <div className="flex gap-1.5">
             {visibleDates.map(date=> (
@@ -53,5 +63,3 @@ function HabitItem({habit}:HabitItemProps){
         </div>
     </div>
 }
-
-export default HabitList
