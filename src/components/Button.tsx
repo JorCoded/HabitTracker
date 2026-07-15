@@ -1,5 +1,6 @@
 //import React from 'react'
 import type { ComponentProps } from "react";
+import { twMerge } from "tailwind-merge";
 
 type Variant = "primary"|"secondary"|"ghost-destructive";
 type ButtonProps = {
@@ -7,9 +8,15 @@ type ButtonProps = {
     //children : ReactNode,
     variant? : Variant
 }& ComponentProps<"button">
-function Button ({/* children, */ variant="primary", ...props}:ButtonProps,)  { //{ text } :ButtonProps
+function Button ({/* children, */ variant="primary", className, ...props}:ButtonProps,)  { //{ text } :ButtonProps
   return (
-    <button {...props} className={`${getVariantStyle(variant)} transition-colors rounded px-3 py-1 disabled:cursor-not-allowed disabled:opacity-30`}/>/* {children}</button> */
+    <button 
+    {...props} 
+    className={twMerge(
+        "transition-colors rounded px-3 py-1 disabled:cursor-not-allowed disabled:opacity-30", 
+        getVariantStyle(variant), 
+        className,
+    )}/>/* {children}</button> */
   )
 }
 
@@ -29,6 +36,7 @@ function getVariantStyle(variant: Variant){
         default:
             throw new Error(`Invalid variant: ${variant satisfies never}`);
     }
+    return style;
 }
 
 export default Button;
