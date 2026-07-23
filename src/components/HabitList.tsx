@@ -1,45 +1,52 @@
 //import React from 'react'
 import noItemImg from "../assets/690-6902481_transparent-zzz-emoji-png-google-sleeping-emoji-png.png";
 import Button from "./Button";
-import {eachDayOfInterval, startOfWeek, endOfWeek, isFuture} from "date-fns";
+import {eachDayOfInterval, startOfWeek, endOfWeek, isFuture, isSameDay} from "date-fns";
 import {format} from "date-fns";
 
 export type Habit={
     id:string;
-    name:string
+    name:string,
+    completions: Date[],
 }
 
 type HabitListProps={
     habits: Habit[],
     deleteHabit:(id:string)=>void,
+    toggleHabit:(id:string, date:Date)=>void
 }
 
-export default function HabitList ({habits, deleteHabit}:HabitListProps)  {
+export default function HabitList ({habits, deleteHabit, toggleHabit}:HabitListProps)  {
     //const habits =[{id:"1", name:"Avery"},{id:"2", name:"Bennette"},];
 
-    let str = <></>;
+    let componentStr = <></>;
 
     if (habits.length ===0) {
-        str= <><p className="text-zinc-400 text-center py-12">No habits found... Add one to get started!</p><img className="mx-auto" width={100} height={100} src={noItemImg} alt="" /></>
+
+        componentStr= <><p className="text-zinc-400 text-center py-12">No habits found... Add one to get started!</p><img className="mx-auto" width={100} height={100} src={noItemImg} alt="" /></>
+
     }else{
 
-        str = <div className="flex flex-col gap-3">
+        componentStr = 
+        <div className="w-full flex flex-col gap-3">
             
             {habits.map(habit=>(
-                <HabitItem deleteHabit={()=>deleteHabit(habit.id)} key={habit.id} habit={habit}/>
+                <HabitItem deleteHabit={()=>deleteHabit(habit.id)} toggleHabit={()=>toggleHabit} key={habit.id} habit={habit}/>
             ))}
-            </div>
+        </div>;
     }
 
-
-  return str;
+  return componentStr;
 }
 
 type HabitItemProps = {
     habit: Habit,
     deleteHabit: (id:string)=>void,
+    toggleHabit:(id:string, date:Date)=>void
 }
-function HabitItem({habit, deleteHabit}:HabitItemProps){
+
+function HabitItem({habit, deleteHabit, toggleHabit}:HabitItemProps){
+    
     const visibleDates = eachDayOfInterval({
         start: startOfWeek(new Date(), {weekStartsOn:1}),
         end: endOfWeek(new Date(), {weekStartsOn:1}),
@@ -51,13 +58,23 @@ function HabitItem({habit, deleteHabit}:HabitItemProps){
                 <span className="font-medium">{habit.name}</span>
                 <span className="text-small text-amber-400">🔥 3</span>
             </div>
-            <Button onClick={()=>deleteHabit(habit.id)} variant="ghost-destructive" className="text-sm">Delete</Button>
+            <Button 
+            onClick={()=>deleteHabit(habit.id)} 
+            variant="ghost-destructive" 
+            className="text-sm">Delete
+            </Button>
         </div>
         <div className="flex gap-1.5">
             {visibleDates.map(date=> (
-                <Button className="flex flex-1 flex-col items-center gap-0.5 rounded-lg text-sm" key={date.toISOString()} disabled={isFuture(date)}>
+                <Button className="flex flex-1 flex-col items-center gap-0.5 rounded-lg text-sm" 
+                key={date.toISOString()} 
+                disabled={isFuture(date)}
+                onClick={()=>toggleHabit(habit.id, date)}
+                variant={habit.completions.some(d=> isSameDay(date,d))? "primary":"secondary"}>
+
                     <span className="font-medium">{format(date, "EEE")}</span>
                     <span>{format(date, "d")}</span>
+
                 </Button>
             ))}
         </div>

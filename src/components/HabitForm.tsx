@@ -7,13 +7,13 @@ type HabitFormProps={
 }
 
 function HabitForm ({addHabit}:HabitFormProps)  {
-    const [name, setName] = useState("");
+    const [name, setName] = useState(""); //useState hook to manipulate variable 'name' using function 'setName'
 
-    function handleSubmit(e:SubmitEvent){
+    function handleSubmit(e:SubmitEvent){ //handles the form submission and executes codes accordingly.
         e.preventDefault()
 
-        if(name.trim()==="")return;
-        setName("");
+        if(name.trim()==="")return; //if there is nothing in the input field then return nothing.
+        setName(""); //else call function setName and 
         addHabit(name);
     }
 
