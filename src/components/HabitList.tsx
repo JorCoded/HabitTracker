@@ -7,16 +7,17 @@ import {format} from "date-fns";
 export type Habit={
     id:string;
     name:string,
-    completions: Date[],
+    completions: Date[]
 }
 
 type HabitListProps={
     habits: Habit[],
     deleteHabit:(id:string)=>void,
-    toggleHabit:(id:string, date:Date)=>void
+    toggleHabit:(id:string, date:Date)=>void,
+    testing:(id:string)=>void,
 }
 
-export default function HabitList ({habits, deleteHabit, toggleHabit}:HabitListProps)  {
+export default function HabitList ({habits, deleteHabit, toggleHabit, testing}:HabitListProps)  {
     //const habits =[{id:"1", name:"Avery"},{id:"2", name:"Bennette"},];
 
     let componentStr = <></>;
@@ -31,7 +32,7 @@ export default function HabitList ({habits, deleteHabit, toggleHabit}:HabitListP
         <div className="w-full flex flex-col gap-3">
             
             {habits.map(habit=>(
-                <HabitItem deleteHabit={()=>deleteHabit(habit.id)} toggleHabit={()=>toggleHabit} key={habit.id} habit={habit}/>
+                <HabitItem deleteHabit={()=>deleteHabit(habit.id)} toggleHabit={toggleHabit} testing={testing} key={habit.id} habit={habit}/>
             ))}
         </div>;
     }
@@ -42,10 +43,11 @@ export default function HabitList ({habits, deleteHabit, toggleHabit}:HabitListP
 type HabitItemProps = {
     habit: Habit,
     deleteHabit: (id:string)=>void,
-    toggleHabit:(id:string, date:Date)=>void
+    toggleHabit:(id:string, date:Date)=>void,
+    testing:(id:string)=>void,
 }
 
-function HabitItem({habit, deleteHabit, toggleHabit}:HabitItemProps){
+function HabitItem({habit, deleteHabit, toggleHabit, testing}:HabitItemProps){
     
     const visibleDates = eachDayOfInterval({
         start: startOfWeek(new Date(), {weekStartsOn:1}),
@@ -69,8 +71,9 @@ function HabitItem({habit, deleteHabit, toggleHabit}:HabitItemProps){
                 <Button className="flex flex-1 flex-col items-center gap-0.5 rounded-lg text-sm" 
                 key={date.toISOString()} 
                 disabled={isFuture(date)}
-                onClick={()=>toggleHabit(habit.id, date)}
-                variant={habit.completions.some(d=> isSameDay(date,d))? "primary":"secondary"}>
+                onClick={()=>/* testing("1") */toggleHabit(habit.id, date)}
+                variant={habit.completions.some(d => isSameDay(date,d)) ? "primary":"secondary"}
+                >
 
                     <span className="font-medium">{format(date, "EEE")}</span>
                     <span>{format(date, "d")}</span>
