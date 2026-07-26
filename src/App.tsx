@@ -1,47 +1,18 @@
 //import { useState } from 'react'
 import Header from "./components/Header";
 import HabitForm from "./components/HabitForm";
-import HabitList, {type Habit} from "./components/HabitList";
-import { useState } from "react";
-import { isSameDay } from "date-fns";
+import { HabitProvider } from "./context/HabitProvider";
+import HabitList from "./components/HabitList";
 
 export default function App() {
-  const [habits, setHabits] = useState<Habit[]>([]);
-
-  function addHabit(name:string){
-    setHabits(curr => [...curr, { id: crypto.randomUUID(), name, completions:[]}]);
-
-  }
-  
-  function deleteHabit(id:string){
-    setHabits(curr => curr.filter(h=>h.id !== id))
-    //Add flash notification to affirm deletion
-  }
-  
-  function toggleHabit(id:string, date:Date){
-    setHabits(curr => (
-      curr.map(h => {
-        if(h.id !== id) return h;
-
-        const alreadyDone = h.completions.some(c => isSameDay(c, date));
-        const completions = alreadyDone ? 
-        h.completions.filter(c => !isSameDay(c, date)) : 
-        [...h.completions, date]
-        return {...h, completions}
-      })
-    ),)
-  }
-
-  function testing(id:string){
-    console.log(`Function test ${id}`);
-  }
-
 
   return (
     <div className="max-w-2xl mx-auto p-4 flex flex-col gap-4">
+      <HabitProvider>
       <Header/>
-      <HabitForm addHabit={addHabit}/>
-      <HabitList deleteHabit={deleteHabit} toggleHabit={toggleHabit} testing={testing} habits={habits}/>
+      <HabitForm />
+      <HabitList/>
+      </HabitProvider>
     </div>
   )
 }
