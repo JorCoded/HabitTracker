@@ -1,11 +1,15 @@
 //import React from 'react'
 import noItemImg from "../assets/690-6902481_transparent-zzz-emoji-png-google-sleeping-emoji-png.png";
 import Button from "./Button";
-import {eachDayOfInterval, startOfWeek, endOfWeek, isFuture, isSameDay, subDays} from "date-fns";
+import {isFuture, isSameDay, subDays} from "date-fns";
 import {format} from "date-fns";
 import {  useHabits, type Habit } from "../context/HabitProvider";
 
-export default function HabitList ()  {
+type HabitListProps={
+    visibleDates: Date[],
+}
+
+export default function HabitList ({visibleDates}:HabitListProps)  {
     const {habits} = useHabits()
     let componentStr = <></>;
 
@@ -19,7 +23,7 @@ export default function HabitList ()  {
         <div className="w-full flex flex-col gap-3">
             
             {habits.map(habit=>(
-                <HabitItem key={habit.id} habit={habit}/>
+                <HabitItem visibleDates={visibleDates} key={habit.id} habit={habit}/>
             ))}
         </div>;
     }
@@ -29,15 +33,13 @@ export default function HabitList ()  {
 
 type HabitItemProps = {
     habit: Habit,
+    visibleDates: Date[],
 }
 
-function HabitItem({habit}:HabitItemProps){
+function HabitItem({habit, visibleDates}:HabitItemProps){
     const { deleteHabit, toggleHabit} = useHabits()
 
-    const visibleDates = eachDayOfInterval({
-        start: startOfWeek(new Date(), {weekStartsOn:1}),
-        end: endOfWeek(new Date(), {weekStartsOn:1}),
-    }) ;
+    
 
     const streak = getStreak(habit.completions);
 
